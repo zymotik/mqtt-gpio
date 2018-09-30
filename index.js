@@ -9,11 +9,13 @@ async function init(){
     settings = await loadSettings();
 
     if (settings && settings.server) {
+        log(`Init server: ${settings.server}`);
         mqttClient = mqtt.connect(`mqtt://${settings.server}`);
         mqttClient.subscribe(settings.subscriptionTopic, function (err) {
             if (err){
                 console.error(err);
             }
+            log(`Subscription to topic: ${settings.subscriptionTopic} started`);
         });
 
         mqttClient.on('message', responseToMqttMessage);
@@ -34,8 +36,8 @@ function loadSettings(){
 }
 
 function responseToMqttMessage(topic, message) {
+    log(`Received topic: ${topic} message: ${message}`);
     const gpioAddress = parseGpioFromTopic(topic);
-    log(`received topic: ${topic} message: ${message}`);
     setGpioStatus(gpioAddress, message);
 }
 
@@ -53,12 +55,14 @@ function setGpioStatus(gpioAddress, state){
             console.error(err);
             return;
         }
+        log(`GPIO ${gpioAddress} setup`);
+        
         gpio.promise.write(gpioAddress, !!state).then((err) => {
             if (err) {
                 console.error(err);
                 return;
             }
-            log(`${gpioAddress} set to state '${!!state.toString()}'`);
+            log(`${gpioAddress} set to state '${(!!state).toString()}'`);
         });
     });
 }
