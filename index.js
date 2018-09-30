@@ -10,7 +10,7 @@ async function init(){
 
     if (settings && settings.server) {
         log(`Init server: ${settings.server}`);
-        mqttClient = mqtt.connect(`mqtt://${settings.server}`);
+        mqttClient = mqtt.connect({host: `${settings.server}`, username: settings.username, password: settings.password});
         mqttClient.subscribe(settings.subscriptionTopic, function (err) {
             if (err){
                 console.error(err);

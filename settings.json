@@ -1,5 +1,7 @@
 {
     "server": "192.168.0.5",
+    "username": "homeassistant",
+    "password": "password",
     "subscriptionTopic": "heating/downstairs/+",
     "topicToGpioRegex": "(?:heating\/downstairs\/gpio-)([0-9]*)"
 }
