@@ -62,7 +62,7 @@ function setGpioStatus(gpioAddress, state){
 
 function log(message){
     const now = new Date();
-    const strNow = `${pad(now.getDay())}/${pad(now.getMonth())}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+    const strNow = `${pad(now.getDate())}/${pad(now.getMonth())}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
     console.log(`${strNow} ${message}`);
 }
 
