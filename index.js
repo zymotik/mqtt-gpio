@@ -5,10 +5,10 @@ const fs = require('fs');
 let settings = {};
 let mqttClient;
 
-function init(){
-    loadSettings();
+async function init(){
+    settings = await loadSettings();
 
-    if (settings.server) {
+    if (settings && settings.server) {
         mqttClient = mqtt.connect(`mqtt://${settings.server}`);
         mqttClient.subscribe(settings.subscriptionTopic, function (err) {
             if (err){
@@ -21,12 +21,15 @@ function init(){
 }
 
 function loadSettings(){
-    settings = fs.readFile('./settings.json', (err, data) => {
-        if (err) {
-            console.error(err);
-            return;
-        }
-        settings = JSON.parse(data);
+    return new Promise((resolve, reject) => {
+        fs.readFile('./settings.json', (err, data) => {
+            if (err) {
+                console.error(err);
+                reject(err);
+            }
+            resolve(JSON.parse(data));
+        });
+    
     });
 }
 
