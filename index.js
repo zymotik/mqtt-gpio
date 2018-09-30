@@ -38,7 +38,8 @@ function loadSettings(){
 function responseToMqttMessage(topic, message) {
     log(`Received topic: ${topic} message: ${message}`);
     const gpioAddress = parseGpioFromTopic(topic);
-    setGpioStatus(gpioAddress, message);
+    
+    setupGpioAddressAndSetState(gpioAddress, message);
 }
 
 function parseGpioFromTopic(topic){
@@ -49,21 +50,26 @@ function parseGpioFromTopic(topic){
     }    
 }
 
-function setGpioStatus(gpioAddress, state){
+function setupGpioAddressAndSetState(gpioAddress, state){
     gpio.promise.setup(gpioAddress, gpio.DIR_OUT).then((err) => {
         if (err) {
             console.error(err);
             return;
         }
         log(`GPIO ${gpioAddress} setup`);
-        
-        gpio.promise.write(gpioAddress, !!state).then((err) => {
-            if (err) {
-                console.error(err);
-                return;
-            }
-            log(`${gpioAddress} set to state '${(!!state).toString()}'`);
-        });
+
+        setGpioState(gpioAddress, state);
+    });
+}
+
+function setGpioState(gpioAddress, state) {
+    const switchOn = isSwitchOnState(state);
+    gpio.promise.write(gpioAddress, switchOn).then((err) => {
+        if (err) {
+            console.error(err);
+            return;
+        }
+        log(`${gpioAddress} set to state '${switchOn}'`);
     });
 }
 
@@ -75,6 +81,13 @@ function log(message){
 
 function pad(number){
     return number.toString().padStart(2,0);
+}
+
+function isSwitchOnState(input){
+    const test = input.toString().toLowerCase();
+    return test.indexOf('true') >= 0 
+            || test.indexOf('1') >= 0
+            || test.indexOf('on') >= 0;
 }
 
 init();
