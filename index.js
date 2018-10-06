@@ -6,6 +6,7 @@ let settings = {};
 let mqttClient;
 
 async function init(){
+    gpio.setMode('mode_bcm'); // refer to GPIO's rather than pin numbers
     settings = await loadSettings();
 
     if (settings && settings.server) {
@@ -46,8 +47,12 @@ function parseGpioFromTopic(topic){
     const regex = new RegExp(settings.topicToGpioRegex);
     const results = regex.exec(topic);
     if (results.length === 2) {
-        return results[1];
-    }    
+        try {
+            return parseInt(results[1]);
+        } catch(e) {
+            console.error('Could not parse integer value for GPIO address');
+        }
+    }
 }
 
 function setupGpioAddressAndSetState(gpioAddress, state){
