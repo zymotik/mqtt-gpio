@@ -3,5 +3,6 @@
     "username": "homeassistant",
     "password": "password",
     "subscriptionTopic": "heating/downstairs/+",
+    "publishTopic": "tele/heating/downstairs/gpio-",
     "topicToGpioRegex": "(?:heating\/downstairs\/gpio-)([0-9]*)"
 }
