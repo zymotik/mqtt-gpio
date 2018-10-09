@@ -1,12 +1,12 @@
 const mqtt = require('mqtt');
-const gpio = require('rpi-gpio');
+const { Gpio } = require('onoff');
 const fs = require('fs');
 
 let settings = {};
 let mqttClient;
+const gpios = {};
 
 async function init(){
-    gpio.setMode('mode_bcm'); // refer to GPIO's rather than pin numbers
     settings = await loadSettings();
 
     if (settings && settings.server) {
@@ -39,8 +39,8 @@ function loadSettings(){
 function responseToMqttMessage(topic, message) {
     log(`Received topic: ${topic} message: ${message}`);
     const gpioAddress = parseGpioFromTopic(topic);
-    
-    setupGpioAddressAndSetState(gpioAddress, message);
+    const state = isSwitchOnState(message);
+    setGpioState(gpioAddress, state);
 }
 
 function parseGpioFromTopic(topic){
@@ -55,27 +55,28 @@ function parseGpioFromTopic(topic){
     }
 }
 
-function setupGpioAddressAndSetState(gpioAddress, state){
-    gpio.promise.setup(gpioAddress, gpio.DIR_OUT).then((err) => {
-        if (err) {
-            console.error(err);
-            return;
-        }
-        log(`GPIO ${gpioAddress} setup`);
+function setGpioState(gpioAddress, state) {
+    try {
+        const io = getGpio(gpioAddress);
+        io.writeSync(state ? 1 : 0);
+    } catch (e) {
+        console.error(err);
+        return;
+    }
 
-        setGpioState(gpioAddress, state);
-    });
+    log(`${gpioAddress} set to state '${switchOn}'`);
 }
 
-function setGpioState(gpioAddress, state) {
-    const switchOn = isSwitchOnState(state);
-    gpio.promise.write(gpioAddress, switchOn).then((err) => {
-        if (err) {
-            console.error(err);
-            return;
+function getGpio(gpioAddress, direction) {
+    const io = gpios[gpioaddress];
+    if (io){
+        if (io.direction !== direction) {
+            io.setDirection(direction);    
         }
-        log(`${gpioAddress} set to state '${switchOn}'`);
-    });
+        return io;
+    }
+    gpios[gpioAddress] = new Gpio(gpioAddress, direction);
+    return gpios[gpioAddress];
 }
 
 function log(message){
@@ -94,5 +95,16 @@ function isSwitchOnState(input){
             || test.indexOf('1') >= 0
             || test.indexOf('on') >= 0;
 }
+
+function getGpios(){
+    return Object.keys(gpios);
+}
+
+process.on('SIGINT', () => {
+    getGpios.map((key) => {
+        gpios[key].unexport();
+        log(`Unexported: GPIO ${key}`);
+    });
+});
 
 init();
