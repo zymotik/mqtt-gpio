@@ -2,7 +2,7 @@
     "server": "192.168.0.5",
     "username": "homeassistant",
     "password": "password",
-    "subscriptionTopic": "heating/downstairs/+",
+    "subscriptionTopic": "cmnd\/heating/downstairs/+",
     "publishTopic": "tele/heating/downstairs/gpio-",
-    "topicToGpioRegex": "(?:heating\/downstairs\/gpio-)([0-9]*)"
+    "topicToGpioRegex": "(?:cmnd\/heating\/downstairs\/gpio-)([0-9]*)"
 }
