@@ -70,12 +70,14 @@ function responseToMqttMessage(topic, message) {
 function parseGpioFromTopic(topic){
     const regex = new RegExp(settings.topicToGpioRegex);
     const results = regex.exec(topic);
-    if (results.length === 2) {
+    if (results && results.length === 2) {
         try {
             return parseInt(results[1]);
         } catch(e) {
             console.error('Could not parse integer value for GPIO address');
         }
+    } else {
+        console.error('Could not find integer value for GPIO address, check regex and/or topic');
     }
 }
 
