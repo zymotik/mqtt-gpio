@@ -41,7 +41,11 @@ function getStates() {
 
 function publishState(gpioAddress, state){
     console.log('GPIO ' + gpioAddress + ' value is now ' + state);
-    mqttClient.publish(`${settings.publishTopic}${gpioAddress}/STATE`, state ? 'true' : 'false');
+    mqttClient.publish(`${settings.publishTopic}${gpioAddress}/STATE`, 
+        JSON.stringify({
+            'GPIO': gpioAddress,
+            'State': state
+        }));
 }
 
 function loadSettings(){
