@@ -88,6 +88,7 @@ function setGpioState(gpioAddress, state) {
     }
 
     log(`${gpioAddress} set to state '${state}'`);
+    publishState(gpioAddress, state);
 }
 
 function getGpio(gpioAddress, mode = Gpio.OUTPUT) {
