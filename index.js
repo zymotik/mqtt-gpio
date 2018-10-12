@@ -39,12 +39,9 @@ function getStates() {
     });
 }
 
-function publishState(gpioAddress, value){
-    console.log('GPIO ' + gpioAddress + ' value is now ' + value);
-    mqttClient.publish(`${settings.publishTopic}${gpioAddress}/STATE`, JSON.stringify({
-        'GPIO': gpioAddress,
-        'Value': value
-    }));
+function publishState(gpioAddress, state){
+    console.log('GPIO ' + gpioAddress + ' value is now ' + state);
+    mqttClient.publish(`${settings.publishTopic}${gpioAddress}/STATE`, state ? 'on' : 'off');
 }
 
 function loadSettings(){
