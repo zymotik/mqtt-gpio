@@ -1,11 +1,12 @@
 const mqtt = require('mqtt');
-const { Gpio } = require('onoff').Gpio;
+const Gpio = process.env.NODE_ENV !== "production" ? 
+                                require("pigpio-mock").Gpio : 
+                                require("pigpio").Gpio;
 const fs = require('fs');
 
 let settings = {};
 let mqttClient;
 const gpios = {};
-let poller;
 
 async function init(){
     settings = await loadSettings();
@@ -20,7 +21,7 @@ async function init(){
             log(`Subscription to topic: ${settings.subscriptionTopic} started`);
         });
         
-        poller = setInterval(getStates, 10000);
+        setInterval(getStates, settings.statusPollingPeriod * 1000);
         mqttClient.on('message', responseToMqttMessage);
     }
 }
@@ -28,8 +29,8 @@ async function init(){
 function getStates() {
     getGpios().map((gpioAddress) => {
         try {
-            io = getGpio(gpioAddress, 'in'); // shouldn't matter with RaspberryPi
-            state = io.readSync();
+            io = getGpio(gpioAddress, Gpio.OUTPUT); // shouldn't matter with RaspberryPi
+            state = io.digitalRead();
             publishState(gpioAddress, state);
         } catch(e) {
             log(`Problem reading state from ${gpioAddress}`);
@@ -81,7 +82,7 @@ function parseGpioFromTopic(topic){
 function setGpioState(gpioAddress, state) {
     try {
         const io = getGpio(gpioAddress);
-        io.writeSync(state ? 1 : 0);
+        io.digitalWrite(state ? 1 : 0);
     } catch (e) {
         console.error(e);
         return;
@@ -90,15 +91,15 @@ function setGpioState(gpioAddress, state) {
     log(`${gpioAddress} set to state '${state}'`);
 }
 
-function getGpio(gpioAddress, direction) {
-    const io = gpios[gpioaddress];
+function getGpio(gpioAddress, mode = Gpio.OUTPUT) {
+    const io = gpios[gpioAddress];
     if (io){
-        if (io.direction !== direction) {
-            io.setDirection(direction);    
+        if (io.getMode() !== mode) {
+            io.mode(mode);
         }
         return io;
     }
-    gpios[gpioAddress] = new Gpio(gpioAddress, direction);
+    gpios[gpioAddress] = new Gpio(gpioAddress, { mode: mode });
     return gpios[gpioAddress];
 }
 
@@ -122,13 +123,5 @@ function isSwitchOnState(input){
 function getGpios(){
     return Object.keys(gpios);
 }
-
-process.on('SIGINT', () => {
-    getGpios().map((key) => {
-        gpios[key].unexport();
-        log(`Unexported: GPIO ${key}`);
-    });
-    clearInterval(poller);
-});
 
 init();

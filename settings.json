@@ -4,5 +4,6 @@
     "password": "password",
     "subscriptionTopic": "cmnd\/heating/downstairs/+",
     "publishTopic": "tele/heating/downstairs/gpio-",
-    "topicToGpioRegex": "(?:cmnd\/heating\/downstairs\/gpio-)([0-9]*)"
+    "topicToGpioRegex": "(?:cmnd\/heating\/downstairs\/gpio-)([0-9]*)",
+    "statusPollingPeriod": 60
 }
