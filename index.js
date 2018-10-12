@@ -1,5 +1,5 @@
 const mqtt = require('mqtt');
-const { Gpio } = require('onoff');
+const { Gpio } = require('onoff').Gpio;
 const fs = require('fs');
 
 let settings = {};
@@ -19,21 +19,21 @@ async function init(){
             }
             log(`Subscription to topic: ${settings.subscriptionTopic} started`);
         });
-
+        
         poller = setInterval(getStates, 10000);
         mqttClient.on('message', responseToMqttMessage);
     }
 }
 
 function getStates() {
-    getGpios.map((gpioAddress) => {
+    getGpios().map((gpioAddress) => {
         try {
             io = getGpio(gpioAddress, 'in'); // shouldn't matter with RaspberryPi
             state = io.readSync();
-            publishState(gpioAddress, value);
+            publishState(gpioAddress, state);
         } catch(e) {
             log(`Problem reading state from ${gpioAddress}`);
-            console.error(err);
+            console.error(e);
         }
     });
 }
@@ -83,11 +83,11 @@ function setGpioState(gpioAddress, state) {
         const io = getGpio(gpioAddress);
         io.writeSync(state ? 1 : 0);
     } catch (e) {
-        console.error(err);
+        console.error(e);
         return;
     }
 
-    log(`${gpioAddress} set to state '${switchOn}'`);
+    log(`${gpioAddress} set to state '${state}'`);
 }
 
 function getGpio(gpioAddress, direction) {
@@ -124,7 +124,7 @@ function getGpios(){
 }
 
 process.on('SIGINT', () => {
-    getGpios.map((key) => {
+    getGpios().map((key) => {
         gpios[key].unexport();
         log(`Unexported: GPIO ${key}`);
     });
