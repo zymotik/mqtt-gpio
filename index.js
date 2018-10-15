@@ -81,16 +81,17 @@ function parseGpioFromTopic(topic){
 }
 
 function setGpioState(gpioAddress, state) {
+    const newState = state ? 1 : 0;
     try {
         const io = getGpio(gpioAddress);
-        io.digitalWrite(state ? 1 : 0);
+        io.digitalWrite(newState);
     } catch (e) {
         console.error(e);
         return;
     }
 
-    log(`${gpioAddress} set to state '${state}'`);
-    publishState(gpioAddress, state);
+    log(`${gpioAddress} set to state '${newState}'`);
+    publishState(gpioAddress, newState);
 }
 
 function getGpio(gpioAddress, mode = Gpio.OUTPUT) {
