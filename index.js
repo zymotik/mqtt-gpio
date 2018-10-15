@@ -1,7 +1,5 @@
 const mqtt = require('mqtt');
-const Gpio = process.env.NODE_ENV !== "production" ? 
-                                require("pigpio-mock").Gpio : 
-                                require("pigpio").Gpio;
+const Gpio = require("pigpio").Gpio; // test: require("pigpio-mock").Gpio
 const fs = require('fs');
 
 let settings = {};
