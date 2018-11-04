@@ -10,7 +10,7 @@ Quick start:
 
 * switch to the `mqtt-gpio` folder
 
-* install node librarys:
+* install node libraries:
 
     `npm install`
 
