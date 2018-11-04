@@ -1,73 +1,51 @@
-const mqtt = require('mqtt');
-const Gpio = require("pigpio").Gpio; // test: require("pigpio-mock").Gpio
-const fs = require('fs');
+const gpio = require('./gpio');
+const mqtt = require('./mqtt');
+const { config } = require('./config');
 
-let settings = {};
-let mqttClient;
-const gpios = {};
-
-async function init(){
-    settings = await loadSettings();
-
-    if (settings && settings.server) {
-        log(`Init server: ${settings.server}`);
-        mqttClient = mqtt.connect({host: `${settings.server}`, username: settings.username, password: settings.password});
-        mqttClient.subscribe(settings.subscriptionTopic, function (err) {
-            if (err){
-                console.error(err);
-            }
-            log(`Subscription to topic: ${settings.subscriptionTopic} started`);
-        });
+function init(){
+    log(`Configuration loaded: ${JSON.stringify(config)}`);
+    if (config.server) {
+        if (config.username && config.password) {
+            log(`Connect MQTT server with credentials`);
+            mqtt.connect(config.server, config.username, config.password);
+        } else {
+            log(`Connect MQTT server`);
+            mqtt.connect(config.server);
+        }
         
-        setInterval(getStates, settings.statusPollingPeriod * 1000);
-        mqttClient.on('message', responseToMqttMessage);
+        mqtt.subscribe(config.subscriptionTopic, responseToMqttMessage);
+        
+        setInterval(getStates, config.statusPollingPeriod * 1000);
+    } else {
+        throw 'Invalid config file';
     }
 }
 
 function getStates() {
-    getGpios().map((gpioAddress) => {
-        try {
-            io = getGpio(gpioAddress, Gpio.OUTPUT); // shouldn't matter with RaspberryPi
-            state = io.digitalRead();
-            publishState(gpioAddress, state);
-        } catch(e) {
-            log(`Problem reading state from ${gpioAddress}`);
-            console.error(e);
-        }
+    gpio.getInUse().map((gpioAddress) => {
+        state = gpio.read(gpioAddress);
+        publishState(gpioAddress, state);
     });
 }
 
 function publishState(gpioAddress, state){
-    console.log('GPIO ' + gpioAddress + ' value is now ' + state);
-    mqttClient.publish(`${settings.publishTopic}${gpioAddress}/STATE`, 
+    mqtt.publish(`${config.publishTopic}${gpioAddress}/STATE`, 
         JSON.stringify({
             'GPIO': gpioAddress,
-            'State': state
+            'State': state ? 1 : 0
         }));
-}
-
-function loadSettings(){
-    return new Promise((resolve, reject) => {
-        fs.readFile('./settings.json', (err, data) => {
-            if (err) {
-                console.error(err);
-                reject(err);
-            }
-            resolve(JSON.parse(data));
-        });
-    
-    });
 }
 
 function responseToMqttMessage(topic, message) {
     log(`Received topic: ${topic} message: ${message}`);
     const gpioAddress = parseGpioFromTopic(topic);
     const state = isSwitchOnState(message);
-    setGpioState(gpioAddress, state);
+    const newState = gpio.set(gpioAddress, state);
+    publishState(gpioAddress, newState);
 }
 
 function parseGpioFromTopic(topic){
-    const regex = new RegExp(settings.topicToGpioRegex);
+    const regex = new RegExp(config.topicToGpioRegex);
     const results = regex.exec(topic);
     if (results && results.length === 2) {
         try {
@@ -80,36 +58,12 @@ function parseGpioFromTopic(topic){
     }
 }
 
-function setGpioState(gpioAddress, state) {
-    const newState = state ? 1 : 0;
-    try {
-        const io = getGpio(gpioAddress);
-        io.digitalWrite(newState);
-    } catch (e) {
-        console.error(e);
-        return;
-    }
-
-    log(`${gpioAddress} set to state '${newState}'`);
-    publishState(gpioAddress, newState);
-}
-
-function getGpio(gpioAddress, mode = Gpio.OUTPUT) {
-    const io = gpios[gpioAddress];
-    if (io){
-        if (io.getMode() !== mode) {
-            io.mode(mode);
-        }
-        return io;
-    }
-    gpios[gpioAddress] = new Gpio(gpioAddress, { mode: mode });
-    return gpios[gpioAddress];
-}
-
 function log(message){
-    const now = new Date();
-    const strNow = `${pad(now.getDate())}/${pad(now.getMonth())}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
-    console.log(`${strNow} ${message}`);
+    if (config.log) {
+        const now = new Date();
+        const strNow = `${pad(now.getDate())}/${pad(now.getMonth())}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+        console.log(`${strNow} ${message}`);
+    }
 }
 
 function pad(number){
@@ -121,10 +75,6 @@ function isSwitchOnState(input){
     return test.indexOf('true') >= 0 
             || test.indexOf('1') >= 0
             || test.indexOf('on') >= 0;
-}
-
-function getGpios(){
-    return Object.keys(gpios);
 }
 
 init();

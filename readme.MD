@@ -6,10 +6,6 @@ In my use case, I'm using Home Assistant climate app to turn on a heating zone r
 
 Look at my other node packages for code to publish OneWire events to MQTT topics for Home Assistant.
 
-## Rapsberry Pi run Node script at system start
+## Developer notes
 
-From terminal `chmod 755 exec.sh` file
-
-Add `lxterminal -e "/path/to/script/exec.sh"` to system start (Autostart under LXSession configuration)
-
-
+*Note:* `npm install` will fail on anything but a RaspberryPi. To install and run tests, use `npm run install-none-pi` before `npm run test`.
