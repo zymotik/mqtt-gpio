@@ -1,9 +1,10 @@
 const gpio = require('./gpio');
 const mqtt = require('./mqtt');
 const { config } = require('./config');
+const { log } = require('./logger');
 
 function init(){
-    log(`Configuration loaded: ${JSON.stringify(config)}`);
+    log(`Configuration loaded: ${JSON.stringify(config)}`, true);
     if (config.server) {
         if (config.username && config.password) {
             log(`Connect MQTT server with credentials`);
@@ -37,7 +38,7 @@ function publishState(gpioAddress, state){
 }
 
 function responseToMqttMessage(topic, message) {
-    log(`Received topic: ${topic} message: ${message}`);
+    log(`Received topic: ${topic} message: ${message}`, true);
     const gpioAddress = parseGpioFromTopic(topic);
     const state = isSwitchOnState(message);
     const newState = gpio.set(gpioAddress, state);
@@ -56,18 +57,6 @@ function parseGpioFromTopic(topic){
     } else {
         console.error('Could not find integer value for GPIO address, check regex and/or topic');
     }
-}
-
-function log(message){
-    if (config.log) {
-        const now = new Date();
-        const strNow = `${pad(now.getDate())}/${pad(now.getMonth())}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
-        console.log(`${strNow} ${message}`);
-    }
-}
-
-function pad(number){
-    return number.toString().padStart(2,0);
 }
 
 function isSwitchOnState(input){

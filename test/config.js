@@ -32,12 +32,12 @@ describe('settings', function() {
         expect(configRewired.config.publishTopic).to.equal('tele/topic/gpio-');
         expect(configRewired.config.topicToGpioRegex).to.equal('(?:cmnd/topic/gpio-)([0-9]*)');
         expect(configRewired.config.statusPollingPeriod).to.equal(300);
-        expect(configRewired.config.log).to.equal(false);
+        expect(configRewired.config.debug).to.equal(false);
     });
 
     it('should load enable logging', function() {
         const settingsJson = `{
-            "log": true
+            "debug": true
         }`;
         const fsMock = { readFileSync: sinon.fake(() => settingsJson) };
 
@@ -46,6 +46,6 @@ describe('settings', function() {
         }));
         
         fsMock.readFileSync.should.have.been.calledWith('./settings.json');
-        expect(configRewired.config.log).to.equal(true);
+        expect(configRewired.config.debug).to.equal(true);
     });
 });

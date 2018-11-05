@@ -1,7 +1,7 @@
 const fs = require('fs');
 
 let config = {
-    log: false
+    debug: false
 };
 
 function init() {

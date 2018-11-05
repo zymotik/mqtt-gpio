@@ -1,6 +1,7 @@
 
 const Gpio = require('pigpio').Gpio;
 const gpios = {};
+const { log } = require('./logger');
 
 module.exports = {
     set: set,
@@ -15,14 +16,17 @@ module.exports = {
  * @param {boolean} state 
  */
 function set(gpioAddress, state) {
+    log(`Set gpio '${gpioAddress}' to '${state}'`, true);
     const io = get(gpioAddress, Gpio.OUTPUT);
     io.digitalWrite(state ? 1 : 0);
 }
 
 function get(gpioAddress, mode = Gpio.OUTPUT) {
+    log(`Get gpio '${gpioAddress}'`, true);
     const io = gpios[gpioAddress];
     if (io){
         if (io.getMode() !== mode) {
+            log(`Set gpio '${gpioAddress}' mode to ${ mode === Gpio.OUTPUT ? 'OUTPUT' : 'INPUT' }`);
             io.mode(mode);
         }
         return io;
@@ -31,9 +35,12 @@ function get(gpioAddress, mode = Gpio.OUTPUT) {
     return gpios[gpioAddress];
 }
 
-function read(gpio) {
-    const io = get(gpio);
-    return io.digitalRead() === 1;
+function read(gpioAddress) {
+    log(`Read gpio '${gpioAddress}' state`, true);
+    const io = get(gpioAddress);
+    const state = io.digitalRead();
+    log(`Gpio '${gpioAddress}' state '${state}'`, true);
+    return state === 1;
 }
 
 /**

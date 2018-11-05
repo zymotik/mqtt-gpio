@@ -1,4 +1,5 @@
 const mqtt = require('mqtt');
+const { log } = require('./logger');
 
 let mqttClient;
 
@@ -31,7 +32,9 @@ function subscribe(topic, callbackFn){
         throw new Error('Callback function required for new message received');
     }
     
+    log(`Subscribing to '${topic}'`, true);
     mqttClient.subscribe(topic, function (err) {
+        log(`Subscribed to '${topic}'`, true);
         if (err){
             throw new Error(err);
         }
@@ -49,6 +52,6 @@ function publish(topic, message) {
         throw new Error('MQTT broker not connected, use connect() first');        
     }
 
+    log(`Publish '${topic}' message '${message}'`, true);
     mqttClient.publish(topic, message);
 }
-
