@@ -29,6 +29,16 @@ In my use case, I'm using Home Assistant climate app to turn on a heating zone r
 
 Look at my other node packages for code to publish OneWire events to MQTT topics for Home Assistant.
 
+## Install as service
+
+Install this node module as a service that will start automatically on restart of the device:
+
+`sudo npm service-install`
+
+To uninstall:
+
+`sudo npm service-uninstall`
+
 ## Developer notes
 
 `npm install` will fail on anything but a RaspberryPi. To install and run tests, use `npm run install-none-pi` before `npm run test`.
