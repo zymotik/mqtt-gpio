@@ -10,9 +10,4 @@ svc.on('install', function() {
     console.log(`${serviceDetails.name}: service started.`);
 });
 
-try {
-    svc.install();
-} catch (e) {
-    console.error(e);
-    console.log(colors.red('Could be permissions related, try running with sudo.'))
-}
+svc.install();
