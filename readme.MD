@@ -35,7 +35,7 @@ Install this node module as a service that will start automatically on restart o
 
 `sudo npm service-install`
 
-Find logs on the device in the /var/log folder.
+Find logs on the device in the /var/log/daemon.log file.
 
 To uninstall the service:
 

@@ -1,5 +1,6 @@
 const fs = require('fs');
-const colors = require('colors')
+const colors = require('colors');
+const path = require('path');
 
 let config = {
     debug: false,
@@ -8,7 +9,7 @@ let config = {
 
 function init() {
     try {
-        const fileContents = fs.readFileSync('./settings.json');
+        const fileContents = fs.readFileSync(path.join(__dirname, './settings.json'));
         const loadedConfig = JSON.parse(fileContents);
         config = Object.assign(config, loadedConfig);
     } catch(e) {
