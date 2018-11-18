@@ -59,4 +59,22 @@ describe('settings', function() {
         expect(configRewired.config.loadError).to.equal(true);
     });
 
+    it ('should hide password', function() {
+        const settingsJson = `{
+            "debug": true,
+            "password": "secret"
+        }`;
+
+        const consoleLogSpy = sinon.spy(console, 'log');
+        const fsMock = { readFileSync: sinon.fake(() => settingsJson) };
+        const configRewired = rewiremock.proxy('../config', () => ({
+            'fs': fsMock
+        }));
+        
+        expect(consoleLogSpy.args[1][0]).to.contain('******');
+        expect(configRewired.config.password).to.equal('secret');
+        
+        consoleLogSpy.restore();
+    });
+
 });

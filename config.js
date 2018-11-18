@@ -19,6 +19,9 @@ function init() {
         }
     }
     if (!config.loadError) {
+        if (config.debug) {
+            logConfiguration();
+        }
         validateConfig();
     }
 }
@@ -42,6 +45,15 @@ function isNullOrEmpty(value) {
         return true;
     }
     return false;
+}
+
+function logConfiguration(){
+    const runningConfig = Object.assign({}, config);
+    if (runningConfig.password) {
+        runningConfig.password = '******';
+    }
+    console.log(`Configuration loaded:`);
+    console.log(JSON.stringify(runningConfig, null, 2));
 }
 
 init();
