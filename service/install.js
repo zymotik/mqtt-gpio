@@ -1,12 +1,18 @@
 const Service = require('node-service-linux').Service;
 const serviceDetails = require('./service-details');
+const colors = require('colors');
 
 var svc = new Service(serviceDetails);
 
-svc.on('install',function(){
-  console.log(`${serviceDetails.name}: install complete.`);
-  svc.start();
-  console.log(`${serviceDetails.name}: service started.`);
+svc.on('install', function() {
+    console.log(`${serviceDetails.name}: install complete.`);
+    svc.start();
+    console.log(`${serviceDetails.name}: service started.`);
 });
 
-svc.install();
+try {
+    svc.install();
+} catch (e) {
+    console.error(e);
+    console.log(colors.red('Could be permissions related, try running with sudo.'))
+}

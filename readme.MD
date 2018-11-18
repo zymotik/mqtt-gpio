@@ -35,7 +35,9 @@ Install this node module as a service that will start automatically on restart o
 
 `sudo npm service-install`
 
-To uninstall:
+Find logs on the device in the /var/log folder.
+
+To uninstall the service:
 
 `sudo npm service-uninstall`
 

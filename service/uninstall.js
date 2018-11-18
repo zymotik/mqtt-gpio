@@ -6,5 +6,10 @@ var svc = new Service(serviceDetails);
 svc.on('uninstall', function(){
     console.log(`${serviceDetails.name}: uninstall complete.`);
 });
- 
-svc.uninstall();
+
+try {
+    svc.uninstall();
+} catch (e) {
+    console.error(e);
+    console.log(colors.red('Could be permissions related, try running with sudo.'))
+}
