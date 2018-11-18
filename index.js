@@ -4,9 +4,9 @@ const { config } = require('./config');
 const { log } = require('./logger');
 
 function init(){
-    log(`Configuration loaded:`, true);
-    log(JSON.stringify(config, null, 2), true)
     if (!config.loadError) {
+        log(`Configuration loaded:`, true);
+        log(JSON.stringify(config, null, 2), true)
         if (config.username && config.password) {
             log(`Connect MQTT server with credentials`);
             mqtt.connect(config.server, config.username, config.password);
