@@ -4,8 +4,7 @@ const { config } = require('./config');
 const { log } = require('./logger');
 
 function init(){
-    log(`Configuration loaded: ${JSON.stringify(config)}`, true);
-    if (config.server) {
+    if (!config.loadError) {
         if (config.username && config.password) {
             log(`Connect MQTT server with credentials`);
             mqtt.connect(config.server, config.username, config.password);
@@ -17,8 +16,6 @@ function init(){
         mqtt.subscribe(config.subscriptionTopic, responseToMqttMessage);
         
         setInterval(getStates, config.statusPollingPeriod * 1000);
-    } else {
-        throw 'Invalid config file';
     }
 }
 

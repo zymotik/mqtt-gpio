@@ -48,4 +48,33 @@ describe('settings', function() {
         fsMock.readFileSync.should.have.been.calledWith('./settings.json');
         expect(configRewired.config.debug).to.equal(true);
     });
+
+    it('should error when no settings found', function() {
+        const fsMock = { readFileSync: sinon.fake(() => { throw { code: 'ENOENT' }; }) };
+
+        const configRewired = rewiremock.proxy('../config', () => ({
+            'fs': fsMock
+        }));
+        
+        expect(configRewired.config.loadError).to.equal(true);
+    });
+
+    it ('should hide password', function() {
+        const settingsJson = `{
+            "debug": true,
+            "password": "secret"
+        }`;
+
+        const consoleLogSpy = sinon.spy(console, 'log');
+        const fsMock = { readFileSync: sinon.fake(() => settingsJson) };
+        const configRewired = rewiremock.proxy('../config', () => ({
+            'fs': fsMock
+        }));
+        
+        expect(consoleLogSpy.args[1][0]).to.contain('******');
+        expect(configRewired.config.password).to.equal('secret');
+        
+        consoleLogSpy.restore();
+    });
+
 });

@@ -16,7 +16,10 @@ Quick start:
 
 * edit settings:
 
-    `nano settings.json`
+    * Copy: 
+        `copy settings.sample.json settings.json`
+    * Edit:
+        `nano settings.json`
 
 * run library
 
