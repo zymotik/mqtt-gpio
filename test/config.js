@@ -4,6 +4,8 @@ import chai from 'chai';
 import sinonChai from 'sinon-chai';
 import { expect } from 'chai';
 
+const path = require('path');
+
 chai.should();
 chai.use(sinonChai);
 
@@ -24,7 +26,7 @@ describe('settings', function() {
             'fs': fsMock
         }));
         
-        fsMock.readFileSync.should.have.been.calledWith('./settings.json');
+        fsMock.readFileSync.should.have.been.calledWith(path.join(__dirname, '../settings.json'));
         expect(configRewired.config.server).to.equal('192.168.0.1');
         expect(configRewired.config.username).to.equal('someusername');
         expect(configRewired.config.password).to.equal('biglongpa55');
@@ -45,7 +47,7 @@ describe('settings', function() {
             'fs': fsMock
         }));
         
-        fsMock.readFileSync.should.have.been.calledWith('./settings.json');
+        fsMock.readFileSync.should.have.been.calledWith(path.join(__dirname, '../settings.json'));
         expect(configRewired.config.debug).to.equal(true);
     });
 
