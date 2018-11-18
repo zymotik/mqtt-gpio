@@ -96,7 +96,8 @@ function getRewiredGpioModule() {
     const rewiredModule = rewiremock.proxy('../gpio', () => ({
         'pigpio': {
             Gpio: GpioMock
-        }
+        },
+        'logger': { log: () => {} }
     }));
     
     return rewiredModule;

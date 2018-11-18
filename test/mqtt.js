@@ -10,9 +10,7 @@ describe('mqtt connect', function() {
     it('should attempt to connect to mqtt broker with username and password', function() {
         const settings = { serverAddress: 'server.address.com', username: 'testuser', password: 'testpassword' };
         const mqttMock = { connect: sinon.spy() };
-        const mqtt = rewiremock.proxy('../mqtt', () => ({
-            'mqtt': mqttMock
-         }));
+        const mqtt = getMocks(mqttMock);
 
         mqtt.connect(settings.serverAddress, settings.username, settings.password);
 
@@ -22,9 +20,7 @@ describe('mqtt connect', function() {
     it('should attempt to connect to mqtt broker without credentials', function() {
         const settings = { serverAddress: 'server.address.com' };
         const mqttMock = { connect: sinon.spy() };
-        const mqtt = rewiremock.proxy('../mqtt', () => ({
-            'mqtt': mqttMock
-         }));
+        const mqtt = getMocks(mqttMock);
 
         mqtt.connect(settings.serverAddress, settings.username, settings.password);
 
@@ -45,9 +41,7 @@ describe('mqtt publish', function() {
                 };
             }
         };
-        const mqtt = rewiremock.proxy('../mqtt', () => ({
-            'mqtt': mqttMock
-         }));
+        const mqtt = getMocks(mqttMock);
 
         mqtt.connect();
         mqtt.publish(topic, message);
@@ -89,9 +83,7 @@ describe('mqtt subscribe', function() {
                 };
             }
         };
-        const mqtt = rewiremock.proxy('../mqtt', () => ({
-            'mqtt': mqttMock
-         }));
+        const mqtt = getMocks(mqttMock);
 
         mqtt.connect();
         mqtt.subscribe(topic, callbackFn);
@@ -126,11 +118,16 @@ describe('mqtt subscribe', function() {
                 };
             }
         };
-        const mqtt = rewiremock.proxy('../mqtt', () => ({
-            'mqtt': mqttMock
-        }));
+        const mqtt = getMocks(mqttMock);
 
         mqtt.connect();
         chai.expect(() => mqtt.subscribe(topic, callbackFn)).to.throw(errorMessage);
     });
 });
+
+function getMocks(mqttMock) {
+    return rewiremock.proxy('../mqtt', () => ({
+        'mqtt': mqttMock,
+        'logger': { log: () => {} }    
+    }));
+}
