@@ -9,7 +9,8 @@
     "install-none-pi": "npm install --force",
     "test": "nyc mocha --compilers js:babel-core/register --exit",
     "service-install": "node service/install.js",
-    "service-uninstall": "node service/uninstall.js"
+    "service-uninstall": "node service/uninstall.js",
+    "view-log": "tail -f /var/log/daemon.log"
   },
   "keywords": [
     "mqtt"
