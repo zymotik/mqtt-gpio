@@ -1,6 +1,5 @@
 const Service = require('node-service-linux').Service;
 const serviceDetails = require('./service-details');
-const colors = require('colors');
 
 var svc = new Service(serviceDetails);
 
