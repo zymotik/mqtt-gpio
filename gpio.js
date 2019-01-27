@@ -19,6 +19,7 @@ function set(gpioAddress, state) {
     log(`Set gpio '${gpioAddress}' to '${state}'`, true);
     const io = get(gpioAddress, Gpio.OUTPUT);
     io.digitalWrite(state ? 1 : 0);
+    return read(gpioAddress);
 }
 
 function get(gpioAddress, mode = Gpio.OUTPUT) {
