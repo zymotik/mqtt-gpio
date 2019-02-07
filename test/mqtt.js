@@ -49,12 +49,6 @@ describe('mqtt publish', function() {
         publishSpy.should.have.been.calledWith(topic, message);
     });
 
-    it('should error when not connected', function() {
-        const mqtt = require('../mqtt');
-
-        chai.expect(() => mqtt.publish('topic','')).to.throw('MQTT broker not connected, use connect() first');
-    });
-
     it('should error when no topic specified', function() {
         const mqtt = require('../mqtt');
 
