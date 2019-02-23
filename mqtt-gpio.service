@@ -1,3 +1,4 @@
+# https://nodesource.com/blog/running-your-node-js-app-with-systemd-part-1/
 # https://medium.com/@simon_prickett/writing-a-systemd-service-in-node-js-on-raspberry-pi-be88d9bc2e8d
 
 [Unit]
@@ -5,11 +6,8 @@ Description=MQTT-GPIO Service
 After=network.target
 
 [Service]
-WorkingDirectory=/home/pi/scripts/mqtt-gpio
-ExecStart=/usr/bin/npm start
+ExecStart=/usr/bin/node /home/pi/scripts/mqtt-gpio/index.js
 Restart=on-failure
-User=pi
-Environment=PORT=8000
 
 [Install]
 WantedBy=multi-user.target
