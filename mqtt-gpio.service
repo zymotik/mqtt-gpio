@@ -5,7 +5,7 @@ Description=MQTT-GPIO Service
 After=network.target
 
 [Service]
-WorkingDirectory=/home/pi/mqtt-service
+WorkingDirectory=/home/pi/scripts/mqtt-gpio
 ExecStart=/usr/bin/npm start
 Restart=on-failure
 User=pi
