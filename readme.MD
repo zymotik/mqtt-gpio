@@ -29,17 +29,25 @@ In my use case, I'm using Home Assistant climate app to turn on a heating zone r
 
 Look at my other node packages for code to publish OneWire events to MQTT topics for Home Assistant.
 
-## Install as service
+## Setting up as a service on a RaspberryPi
 
-Install this node module as a service that will start automatically on restart of the device:
+Install forever and forever-service on the RaspberryPi
 
-`sudo npm service-install`
+`sudo npm install forever -g`
 
-Find logs on the device in the /var/log/daemon.log file.
+`sudo npm install forever-service -g`
 
-To uninstall the service:
+Then run in the source directory (where this `readme.md` file is):
 
-`sudo npm service-uninstall`
+`sudo npm run service-install`
+
+And to remove:
+
+`sudo npm run service-remove`
+
+To view service logs use the command:
+
+`sudo npm run view-log`
 
 ## Developer notes
 
