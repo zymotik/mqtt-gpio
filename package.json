@@ -8,9 +8,9 @@
     "debug": "node index.js --inspect-brk=9229",
     "install-none-pi": "npm install --force",
     "test": "nyc mocha --compilers js:babel-core/register --exit",
-    "service-install": "forever-service install mqtt-gpio --script index.js --start",
-    "service-remove": "forever-service delete mqtt-gpio",
-    "view-log": "tail -f /var/log/mqtt-gpio.log"
+    "service-install": "forever-service install mqttgpio --script index.js --start",
+    "service-remove": "forever-service delete mqttgpio",
+    "view-log": "tail -f /var/log/mqttgpio.log"
   },
   "keywords": [
     "mqtt"
